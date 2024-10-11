@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",  // or "esnext" if you want to use ES modules
+        "target": "ES6",
+        "strict": false,
+        "esModuleInterop": true,
+        "noImplicitAny": false
+    }
+}
+
