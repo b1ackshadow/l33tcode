@@ -1,6 +1,6 @@
 # LeetCode Solutions
 
-This repository contains solutions to various LeetCode problems implemented in TypeScript.
+This repository contains solutions to various LeetCode problems.
 
 ## Installation
 
@@ -29,8 +29,14 @@ Before you get started, make sure you have [Node.js](https://nodejs.org/) instal
 
 2. Start the program:
 
+    a. Typescript 
     ```bash
     npm start
+    ```
+
+    b. Python
+    ```
+    python3 main.py
     ```
 
 ## Contributing
