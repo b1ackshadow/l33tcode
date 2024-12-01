@@ -1,0 +1,44 @@
+#+title: DSA
+
+
+* Arrays
+** [[https://leetcode.com/problems/set-matrix-zeroes][Set matrix zeroes]]
+
+- Brute force
+  It will take O((N*M)*(N + M)) + O(N*M). No space
+
+- Optimal 1
+  We can use two arrays for row and col to mark indices which have 0. Final iteration to mark all cels whose index is on row or col array. This works but extra space. We need a way to use row and col
+  without extra space
+
+- Optimal 2
+  We can use col0 for every row to mark row_map and row0 cols to map col with 0. but cell 0,0 will overlap. So use the 0th col completely for and col[1:] for cols with extra variable =col0= for 0th col. Now we have row and col markers without extra space.
+
+  But we still need to make sure we dont directly overwrite the cell variables. First do 1,1 to M,N cells as they only rely on their respective row and cols no funny business.
+  Then we know first row cols depend on the actual row[0] which itself depends on =col0= so if were to overwrite row0 then all the row0 cols would be 0. So first we update row0 cols[1:] then we update col[0] for all rows[1:] based on =col0= value.
+
+** [[https://leetcode.com/problems/next-permutation][31 Next permutation]]
+ This is an actual algorithm from 14th century so no need to sweat it. Just know this algorithm.
+
+ [[https://en.wikipedia.org/wiki/Permutation#Generation_in_lexicographic_order][Original Algorithm]]
+
+- Brute force
+  a. generate all permutations
+  b. sort it to find the next permuatation
+
+For finding, all possible permutations, it is taking N!xN. N represents the number of elements present in the input array. Also for searching input arrays from all possible permutations will take N!. Therefore, it has a Time complexity of O(N!xN).
+
+- Optimal
+  We use some observations to develop our algorithm
+
+  a. We need to find the largest prefix possible where there is a break point a[i] < a[i + 1]. Search from the end.
+  b. Once we find the breakpoint, we know there are numbers which are greater than breakpoint which means we can try finding the next closest number. This means find the smallest element that is bigger than a[breakpoint]. Lexographically this number would come after the previous prefix of breakpoint. Find and replace the breakpoint number with this smallest number on the right that is bigger than a[breakpoint].
+  c. Now after point b we have a prefix > original prefix. We need to make sure the resulting number is the closest which would mean the *next*. We can do this by sorting the right part.
+
+
+  =Wikipedia version=,
+
+  a. Find the largest index k such that a[k] < a[k + 1]. If no such index exists, the permutation is the last permutation.
+  b. Find the largest index l greater than k such that a[k] < a[l].
+  c. Swap the value of a[k] with that of a[l].
+  d. Reverse the sequence from a[k + 1] up to and including the final element a[n].

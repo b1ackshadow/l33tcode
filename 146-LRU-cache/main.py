@@ -1,77 +1,46 @@
 from typing import Dict
-
-
-class Node:
-    def __init__(self,key, val,prev = None, next=None):
-        self.key = key
-        self.val = val
-        self.prev = prev
-        self.next = next
+from collections import OrderedDict
 
 class LRUCache:
-    
-
     def __init__(self, capacity: int):
+        self.cache = OrderedDict()
         self.cap = capacity
-        self.cache: Dict[int, Node] = dict()
-        self.size = 0
-        self.lru_head = Node(None, None) # null key value init
-        self.lru_tail = self.lru_head
-        
-    def get(self, key: int) -> int:
-        # if key in self.cache:
-        #     index = self.cache[key]
-        #     self.
-        
 
+    def get(self, key: int) -> int:
+        if key in self.cache:
+            self.put(key, self.cache[key])
+            return self.cache[key]
+
+        return -1
     def put(self, key: int, value: int) -> None:
         if key in self.cache:
-        # no need to check size
-            node = self.cache[key]
-            node.val = value # updated node
+            del self.cache[key]
 
-            prev = node.prev
-            next = node.next
+        self.cache[key] = value
+        if len(self.cache) > self.cap:
+            self.cache.popitem(False)
 
-            prev.next = next
-
-            node.next = None
-            self.lru_tail.next = node
-            node.prev = self.lru_tail
-            self.lru_tail = node
-        else:
-
-            self.evict()
-            node = Node(key, value)
-
-            self.cache[key] = node
-            if self.lru_tail:
-                self.lru_tail.next = node
-                node.prev = self.lru_tail
-                self.lru_tail = node
-            self.size += 1
-
-    def evict(self):
-        if self.size >= self.cap:
-            eviction_candidate = self.lru_head.next
-            if eviction_candidate:
-                print(f"Evicting {eviction_candidate.key}")
-                self.lru_head.next = eviction_candidate.next
-                next = eviction_candidate.next
-                if next:
-                    next.prev = self.lru_head
-                del self.cache[eviction_candidate.key]
-                self.size -= 1
-
-
-
-
+    def __str__(self):
+        return str(self.cache)
 
 # Your LRUCache object will be instantiated and called as such:
-capacity = 2
-obj = LRUCache(capacity)
-key = 123; value = 456
-obj.put(key,value)
-key = 234; value = 567
-key = 369; value = 789
-param_1 = obj.get(key)
+lRUCache = LRUCache(2);
+lRUCache.put(1, 1); 
+print(lRUCache)
+lRUCache.put(2, 2); 
+print(lRUCache.get(1))
+print(lRUCache)
+lRUCache.put(3, 3); 
+print(lRUCache)
+lRUCache.get(2);    
+print(lRUCache.get(2))
+lRUCache.put(4, 4); 
+print(lRUCache)
+lRUCache.get(1);    
+print(lRUCache.get(1))
+lRUCache.get(3);    
+print(lRUCache.get(3))
+print(lRUCache)
+lRUCache.get(4);    
+print(lRUCache.get(4))
+print(lRUCache)
