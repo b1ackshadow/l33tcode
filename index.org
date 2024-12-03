@@ -42,3 +42,44 @@ For finding, all possible permutations, it is taking N!xN. N represents the numb
   b. Find the largest index l greater than k such that a[k] < a[l].
   c. Swap the value of a[k] with that of a[l].
   d. Reverse the sequence from a[k + 1] up to and including the final element a[n].
+
+* Graphs
+** [[https://leetcode.com/problems/number-of-islands/][Number of islands]]
+   Just use basic dfs and mark visited islands. For trick, we can just mark the grid[x][y] = 0 since we will only visit every node once hence =O(mn)= .
+** [[https://leetcode.com/problems/max-area-of-island/][Max area of island]]
+   Same idea as number of island. We need to track area for every node visited. if you a visit a node, then there will be atleast 1 area from this node. Based on each direction possiblity, they will return a local area i.e, area possible from that node (UP,DOWN,LEFT,RIGHT)
+
+   so dfs will return 1 + local_area for every call
+
+   Mistakes:
+        Be careful when you check =valid_move()= . Always call it before exploring a particular move because when we generate the possible moves it may expire by the time recursion comes back.
+** [[https://leetcode.com/problems/clone-graph/][Clone graph]]
+
+Idea is pretty straight forward, we need to traverse all nodes starting from root node. clone the current node and link the neighbors. We link by maintaining node.val -> cloned_node ref.
+If a neighbor does not exist in the hashmap, dfs on it so that the node gets created and is linked with its neighbors. so everytime we clone in the =dfs= we update it on hashmap so that any further
+node which needs to link to this node can find the cloned ref and link it. when recursion comes back all the calling nodes can find the neighbor node and link up.
+
+DFS, Hashmap
+
+Edge cases:
+- no node meaning return None
+- at least 1 node but no neighbors
+- any number of nodes and neighbors
+
+  We are told that nodes start with 1 indexed. If nodes exists then root node would be 1. we return cloned_nodes.get(1, None) a ref to cloned root node
+** [[https://leetcode.com/problems/rotting-oranges][Rotten oranges]]
+
+Probably is an extension of number of island. First inistictive is to use DFS to find the time but the =EDGE= case is that there can be any number of rotten oranges at =time = 0=.
+
+*Note*: Since need to process multiple oranges in every iteration by this we dont mean multiprocessing but model the problem so that every adjacent cell gets the parent cell' =time + 1=
+
+Algorithm:
+1. Initialize the queue with rotten oranges at time 0
+2. start processing every cell, where we get the possible moves for this cell meaning that move[i] is  a valid cell and has a fresh orange.
+3. for each of the adjacent cell, we have to use prev time + 1 as the processed time for this cells. So when they are processed from the queue(when we pop), we know the time after they were originally rotten.
+4. Using its local time, we can keep tracking the new time for all the adjacent cells
+5. This way all the same level(or t = time) oranges are processed in the same timeframe and consequently the resulting adjacent cells from these parent cells are also processed in the same time frame.
+6. The last node processed will be the last processed orange meaning its time will be the total time. So we can keep updating this and return the last_time if there are no fresh oranges left.
+
+Time complexity: BFS so =O(mn)=
+Space complexity: same =O(mn)=
