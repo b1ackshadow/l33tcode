@@ -44,6 +44,15 @@ For finding, all possible permutations, it is taking N!xN. N represents the numb
   d. Reverse the sequence from a[k + 1] up to and including the final element a[n].
 
 * Graphs
+
+*Foundations*
+
+*** Traversal
+
+a. BFS or DFS for basic traversal
+b. Topological sorting using BFS or DFS for pre requisite type problems like course schedule
+c. Kruskals MST algo for undirected weighted graphs using Disjoint set datastructure
+
 ** [[https://leetcode.com/problems/number-of-islands/][Number of islands]]
    Just use basic dfs and mark visited islands. For trick, we can just mark the grid[x][y] = 0 since we will only visit every node once hence =O(mn)= .
 ** [[https://leetcode.com/problems/max-area-of-island/][Max area of island]]
@@ -83,3 +92,85 @@ Algorithm:
 
 Time complexity: BFS so =O(mn)=
 Space complexity: same =O(mn)=
+
+** [[https://leetcode.com/problems/pacific-atlantic-water-flow/description/][Pacific Atlantic Waterflow]]
+
+Initial idea :-
+
+for a given cell, we can do following operations :
+1. check if it goes out of boundary depending on the ocean we are trying to reach
+2. if it does check for each possible move whether we can go based on height values if not skip it
+3. If we can reach an adjacent cell, check if its already visited?
+4. If its is visited, we can check the status of this cell whether it was able to reach the ocean
+5. update the status for the calling original cell.
+
+We can maintain visited map, if a cell was visited it would contain the status of reaching the ocean for example, visited[(0,0)] = (True, False)
+
+*Better idea*
+
+- Treat the problem as flooding based on the condition that flood can go to x_n, y_n if height_prev <= height_n.
+- Initially we can mark the coasts as a starting point for flood
+- Iterate for every cell, if the cell is flooded we can explore
+- For all possible valid moves, we flood it and then try going further from that cell
+- We can explore both oceans using initial coast cells.
+
+Optimizations:
+
+- We can only start the flood from coasts so we need two loops
+
+  1. first and last column for all rows for pacific and atlantic respectively.
+  2. first and last row for all columns for pacific and atlantic respectively.
+
+Note: Also think of BFS solution. We have implemented and logic remains pretty much same just use queue as task manager. if an adjacent cell is reachable add it to queue. everytime we pop a cell we mark it as rechable in the set and return the set from bfs. we can construct both queue get both reacables and P & Q set operation.
+
+
+#+begin_src python
+def dfs(self, x, y, ocean):
+
+moves = self.get_moves(x, y)
+
+for move in moves:
+    x_n, y_n = move
+        if (
+                self.is_valid(x_n, y_n)
+                and self.heights[x][y] <= self.heights[x_n][y_n]
+                and (move not in ocean)
+        ):
+            ocean.add(move)
+            self.dfs(*move, ocean)
+#+end_src
+
+** [[https://leetcode.com/problems/surrounded-regions][Surrounded regions]]
+
+Think of the flooding method from pacific ocean problem. We use a similar approach. Use bfs as it is more convenient and avoid recursion which ends up missing up the logic.
+
+- We know the "O" on borders are "reachable" meaning they are not surrounded.
+- Any intermediate "O" has to find a border "O" to be alive if not it gets turned to "X"
+- This means we only have to start BFS from the borders - Fill up the queue with border "O"s and start exploring adjacent "O"s that are not already reachable(this also tells that an O is visited or not). When we find a new O mark it as reachable
+- Iterate through the board and turn all the Os which are not reachable to "X"
+
+** [[https://leetcode.com/problems/course-schedule/][Course schedule]]
+So the problem statement is can we essentially visit all nodes and process them given that we have visited the indegree nodes or depedency courses in this case. Based on this idea, we have to use topological sort which uses indegrees to find and process a node with 0 indegree value bcuz we can only do a course if it has 0 depedency at the time of processing.
+
+Steps:-
+1. First build the adjacency graph
+2. Compute the indegrees array for all the nodes using the prerequisites depedency array
+3. To start with we need a 0 dependency node. If we cant find then obviously its a cycle we cant process return =False=.
+4. Queue processing starts with 0 node if possible, then process the node -mark it as -1- so that we dont revisit it. decrement all the adjacent nodes.
+5. Find and update queue with a new 0 node.
+6. Return =processed= == =numCourses= .
+
+** [[https://leetcode.com/problems/course-schedule-ii/][Course schedule II]]
+Same algorithm as part 1. We just need to track the processed nodes for the order. everything else pretty much remains same.
+** [[https://leetcode.com/problems/course-schedule-iii/][Course schedule III]]
+This is a little different actually. Nothing to do with Graphs really.
+
+Observations:
+
+- Firstly, we are trying to maximize the number of courses completed
+- If we want to complete max courses, we need to start finishing courses that are sorted by their deadline
+- We sort the courses, start processing each course as long it does not exceed its deadline
+- We need to track total time so far for the courses we have completed
+- if adding a new course does not exceed its deadline keep going
+- If it exceeds the deadline, we need to remove the longest duration course this way we know the number of courses completed remain same except we will be reducing the total_time_taken
+- If we can reduce total time taken, we can probably complete another course
